@@ -1,0 +1,14 @@
+---
+title: "problem statement"
+output: html_document
+date: "2023-05-12"
+---
+
+
+
+### Introduction to the Problem
+
+According to [the Global Economy](https://www.theglobaleconomy.com/Kenya/roads_quality/), the road quality index (**RQI**) in Kenya in 2019 was **4.1**, which put this country in 7th place right after South Africa (the comparison of these countries could be found [here](https://public.tableau.com/app/profile/viktoriia8163/viz/Kenyaroadcondition/Dashboard3)). However, taking into account the fact that RQI varies from 1 to 7, the Kenya road condition can by no means be considered outstanding. Unfortunately, there is no open source recently updated data regarding current road conditions ([the latest update](https://datacatalog.worldbank.org/search/dataset/0042061) was in 2017) but, judging by the tendency of the last few years, the road quality was slowly declining. In view of this, the authorities should consider a reactive maintenance course of action. 
+
+The **Road Condition** tab provides detailed information on the road condition in Kenya ([data source](https://datacatalog.worldbank.org/dataset/kenya-roads)) as well as illustrates the problematic regions that require urgent attention. The **Maintenance Recommendation** tab provides a classification of the possible road defects as well well as suggests the corresponding kinds of work to eliminate those defects ([data source](https://openjicareport.jica.go.jp/pdf/11716925_06.pdf)). 
+
