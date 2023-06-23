@@ -1,12 +1,14 @@
 library(shiny)
 library(shinyWidgets)
-library(tidyverse)
+library(dplyr)
 library(bslib)
 library(leaflet)
+library(maps)
+library(mapproj)
 library(plotly)
 
 thematic::thematic_shiny() 
-
+setwd("/Users/miss_viktoriia/Documents/Git_Road_Maintenance/Road-Maintenance/")
 roads <- readxl::read_excel("data/road maintenance routine.xlsx")
 roads <- roads %>%
   rename(Problem_extend = Defect...3,
@@ -130,12 +132,14 @@ quality_pal <- colorFactor(palette = c("#B2AB2E", "#ED413E", "#686461", "#CFCBC8
                            na.color = "#CFCBC8")
 map <- leaflet(kenya_network) %>% 
   addTiles() %>% 
-  setView(37.906, 0.024, zoom = 6) %>%
+  setView(36.906, 0.4, zoom = 6) %>%
+  #fitBounds(lng1 = 33.4, lat1 = -4.8, lng2 = 41.4, lat2 = 5.3) %>%
   addLegend(position = "bottomright",
             pal = quality_pal,
             values = ~kenya_network$condition_reduc,
             opacity = 0.9,
-            title = "<small>Road Condition</small>") %>%
+            title = paste("<small>Road Condition 
+                          <br><em>click on the road to see info</em></small>")) %>%
   addLayersControl(
     position = "topright",
     overlayGroups = c("Primary (Trunk) Road Network", 
@@ -152,17 +156,32 @@ map <- leaflet(kenya_network) %>%
                weight = 3,
                group = "Primary (Trunk) Road Network",
                color = ~quality_pal(primary$condition_reduc),
-               opacity = 1) %>%
+               opacity = 1,
+               popup = paste("<b>", primary$ROADNO, "road", "</b>", 
+                             "<br> Length:", "<b>", primary$LENGTHKM, "km", "</b>",
+                             "<br> Width:", "<b>", primary$WIDTH, "m", "</b>",
+                             "<br> Lanes:", "<b>", primary$LANES, "</b>",
+                             "<br> Pavement Type:", "<b>", primary$TYPE, "</b>")) %>%
   addPolylines(data = secondary, 
                weight = 2,
                group = "Secondary (Main) Road Network",
                color = ~quality_pal(secondary$condition_reduc),
-               opacity = 1) %>%
+               opacity = 1,
+               popup = paste("<b>", secondary$ROADNO, "road", "</b>", 
+                             "<br> Length:", "<b>", secondary$LENGTHKM, "km", "</b>",
+                             "<br> Width:", "<b>", secondary$WIDTH, "m", "</b>",
+                             "<br> Lanes:", "<b>", secondary$LANES, "</b>",
+                             "<br> Pavement Type:", "<b>", secondary$TYPE, "</b>")) %>%
   addPolylines(data = tert, 
                weight = 1,
                group = "Tertiary Road Network",
                color = ~quality_pal(tert$condition_reduc),
-               opacity = 1)
+               opacity = 1,
+               popup = paste("<b>", tert$ROADNO, "road", "</b>", 
+                             "<br> Length:", "<b>", tert$LENGTHKM, "km", "</b>",
+                             "<br> Width:", "<b>", tert$WIDTH, "m", "</b>",
+                             "<br> Lanes:", "<b>", tert$LANES, "</b>",
+                             "<br> Pavement Type:", "<b>", tert$TYPE, "</b>"))
   
 # Road Map (donut charts + bar charts)
 color <- c("#B2AB2E", "#ED413E", "#686461", "#CFCBC8")
@@ -176,7 +195,7 @@ donut_chart_plot <- function(categ) {
     donut <- plot_ly(pr, labels = ~condition_reduc, values = ~perc, sort = FALSE, textposition = "inside",
                      textinfo = 'percent', hoverinfo = "text", text = ~paste(condition_reduc, perc*100,"%"),
                      marker = list(colors = color, line = list(color = "#F8F9FB", width = 1.5)),
-                     showlegend = FALSE, width = 260, height = 140) %>%
+                     showlegend = FALSE, width = 220, height = 100) %>%
       add_pie(hole = 0.5) %>%
       layout(autosize = FALSE,
              margin = list(l = 20, r = 20, t = 10, b = 10))
@@ -189,7 +208,7 @@ donut_chart_plot <- function(categ) {
     donut <- plot_ly(sc, labels = ~condition_reduc, values = ~perc, sort = FALSE, textposition = "inside",
                      textinfo = 'percent', hoverinfo = "text", text = ~paste(condition_reduc, perc*100,"%"),
                      marker = list(colors = color, line = list(color = "#F8F9FB", width = 1.5)),
-                     showlegend = FALSE, width = 260, height = 140) %>%
+                     showlegend = FALSE, width = 220, height = 100) %>%
       add_pie(hole = 0.5) %>%
       layout(autosize = FALSE,
              margin = list(l = 20, r = 20, t = 10, b = 10))
@@ -202,7 +221,7 @@ donut_chart_plot <- function(categ) {
     donut <- plot_ly(tr, labels = ~condition_reduc, values = ~perc, sort = FALSE, textposition = "inside",
                      textinfo = 'percent', hoverinfo = "text", text = ~paste(condition_reduc, perc*100,"%"),
                      marker = list(colors = color, line = list(color = "#F8F9FB", width = 1.5)),
-                     showlegend = FALSE, width = 260, height = 140) %>%
+                     showlegend = FALSE, width = 220, height = 100) %>%
       add_pie(hole = 0.5) %>%
       layout(autosize = FALSE,
              margin = list(l = 20, r = 20, t = 10, b = 10))
@@ -215,7 +234,7 @@ donut_chart_plot <- function(categ) {
     donut <- plot_ly(all, labels = ~condition_reduc, values = ~perc, sort = FALSE, textposition = "inside",
                      textinfo = 'percent', hoverinfo = "text", text = ~paste(condition_reduc, perc*100,"%"),
                      marker = list(colors = color, line = list(color = "#F8F9FB", width = 1.5)),
-                     showlegend = FALSE, width = 260, height = 140) %>%
+                     showlegend = FALSE, width = 220, height = 100) %>%
       add_pie(hole = 0.5) %>%
       layout(autosize = FALSE,
              margin = list(l = 20, r = 20, t = 10, b = 10))
@@ -233,7 +252,7 @@ bar_chart_plot <- function(categ) {
       summarise(freq = n()) %>%
       mutate(perc = round((freq/sum(freq))*100, 1))
     barchart <- plot_ly(data = df_prime, x = ~freq, y = ~TYPE, color = ~condition_reduc,
-                        colors = color,type = "bar", width = 260, height = 240,
+                        colors = color,type = "bar", width = 220, height = 210,
                         hoverinfo = "text", text = ~paste(condition_reduc, freq, "\n", perc, "%"),
                         textposition = "none",showlegend = FALSE) %>%
       layout(barmode = "stack", autosize = FALSE,
@@ -249,7 +268,7 @@ bar_chart_plot <- function(categ) {
       summarise(freq = n()) %>%
       mutate(perc = round((freq/sum(freq))*100, 1))
     barchart <- plot_ly(data = df_second, x = ~freq, y = ~TYPE, color = ~condition_reduc,
-                        colors = color,type = "bar", width = 260, height = 240,
+                        colors = color,type = "bar", width = 220, height = 210,
                         hoverinfo = "text", text = ~paste(condition_reduc, freq, "\n", perc, "%"),
                         textposition = "none", showlegend = FALSE) %>%
       layout(barmode = "stack", autosize = FALSE,
@@ -265,7 +284,7 @@ bar_chart_plot <- function(categ) {
       summarise(freq = n()) %>%
       mutate(perc = round((freq/sum(freq))*100, 1))
     barchart <- plot_ly(data = df_ter, x = ~freq, y = ~TYPE, color = ~condition_reduc,
-                        colors = color,type = "bar", width = 260, height = 240,
+                        colors = color,type = "bar", width = 220, height = 210,
                         hoverinfo = "text", text = ~paste(condition_reduc, freq, "\n", perc, "%"),
                         textposition = "none", showlegend = FALSE) %>%
       layout(barmode = "stack", autosize = FALSE,
@@ -280,7 +299,7 @@ bar_chart_plot <- function(categ) {
       summarise(freq = n()) %>%
       mutate(perc = round((freq/sum(freq))*100, 1))
     barchart <- plot_ly(data = df_all, x = ~freq, y = ~TYPE, color = ~condition_reduc,
-                        colors = color,type = "bar", width = 260, height = 240,
+                        colors = color,type = "bar", width = 220, height = 210,
                         hoverinfo = "text", text = ~paste(condition_reduc, freq, "\n", perc, "%"),
                         textposition = "none",showlegend = FALSE) %>%
       layout(barmode = "stack", autosize = FALSE,
@@ -335,21 +354,21 @@ ui <- fluidPage(
                                     shinycssloaders::withSpinner(
                                       leaflet::leafletOutput('kenya_roads',
                                                            width = "100%",
-                                                           height = 550), 
+                                                           height = 560), 
                                       size = 1, color = "#719b25"),
                                     absolutePanel(id = "summary", class = "panel",
-                                                  top = 110, left = 220, width = 280, fixed = TRUE,
+                                                  top = 150, left = 185, width = 240, fixed = TRUE,
                                                   draggable = TRUE, height = "auto",
-                                                  span(tags$i(h6("Road condition summary both general and by pavement type.")), style = "color:#686461"),
+                                                  span(tags$i(tags$small("Road condition summary both general and by pavement type.")), style = "color:#686461"),
                                                   selectInput("class", 
                                                               label = "Select Road Class:",
                                                               choices = c("All", "Primary (Trunk)", "Secondary (Main)", "Tertiary"),
                                                               selected = "Primary (Trunk)"),
-                                                  plotlyOutput("quality_donut", height = "140px", width = "100%"),
-                                                  plotlyOutput("surf_bar", height = "240px", width = "100%"),
+                                                  plotlyOutput("quality_donut", height = "100px", width = "100%"),
+                                                  plotlyOutput("surf_bar", height = "210px", width = "100%"),
                                                   tags$style(type = 'text/css', ".selectize-input { font-size: 13px;}
                                                                                  .selectize-dropdown { font-size: 13px;}"))
-                                   ), tags$style(type = "text/css", "#summary {background-color: white; opacity: 0.9; padding: 0 10px 10px 10px; transition: opacity 500ms 1s;}")
+                                   ), tags$style(type = "text/css", "#summary {background-color: white; opacity: 0.9; padding: 5px 5px 5px 5px; transition: opacity 500ms 1s;}")
                                    )
                            ),
                   tabPanel("Maintenance Recommendation",
@@ -367,7 +386,9 @@ ui <- fluidPage(
                                                              choices = levels(roads$Speed)))
                                     ),
                              column(8,
-                                    h4(textOutput(outputId = "maintenance_rec"), align = "center")
+                                    wellPanel(h5(htmlOutput(outputId = "maintenance_rec"), align = "center")),
+                                    h5("Common types of defects on paved roads", align = "center"),
+                                    imageOutput("damage_photo")
                                     )
                                     )
                            )
@@ -406,7 +427,8 @@ server <- function(input, output, session){
       filter(`Road Type` == input$surface)
     })
   observe({
-    updateSelectInput(session, "defect",choices = react_road_type()$Defect_kind)
+    freezeReactiveValue(input, "defect")
+    updateSelectInput(session, "defect", choices = react_road_type()$Defect_kind)
     })
   
   reactive_road_defect <- reactive({
@@ -414,7 +436,8 @@ server <- function(input, output, session){
       filter(Defect_kind == input$defect)
     })
   observe({
-    updateSelectInput(session, "speed",choices = reactive_road_defect()$Speed)
+    freezeReactiveValue(input, "speed")
+    updateSelectInput(session, "speed", choices = reactive_road_defect()$Speed)
     })
   
   reactive_speed <- reactive({
@@ -422,36 +445,45 @@ server <- function(input, output, session){
       filter(Speed == input$speed)
     })
   
-  output$maintenance_rec <- renderText({
+  output$maintenance_rec <- renderUI({
     no_maint <- reactive_speed() %>%
       as.data.frame() %>%
       pull(Ranking) %>%
       unique()
     maint_num <- nrow(as.data.frame(reactive_speed()))
     if (no_maint == "A") {
-      paste("Based on the provided information the severity of the road condition 
-            could be classified as a", reactive_speed()$Problem_extend, "problem of",  
-            reactive_speed()$Ranking,"type. As such, no maintenance is recommended.
-            However, extra monitoring efforts are desirable on this section of the road.")
+      HTML(paste("Based on the provided information the severity of the road condition 
+                  could be classified as a", "<b>", reactive_speed()$Problem_extend, "</b>", "problem of",  
+                  "<b>", reactive_speed()$Ranking, "</b>", "type. As such, no maintenance 
+                  is recommended. However, extra monitoring efforts are desirable on this section of the road."))
     } else if (no_maint != "A") {
       if (maint_num == 1) {
-        paste("Based on the provided information the severity of the road condition 
-              could be classified as a", reactive_speed()$Problem_extend, "problem of",  
-              reactive_speed()$Ranking,"type. As such,", reactive_speed()$`Kind of Maintenance`,
-              "maintenance is recommended, which involves", reactive_speed()$`Suggested Actions`,
-              ".")
+        HTML(paste("Based on the provided information the severity of the road condition 
+                   could be classified as a", "<b>", reactive_speed()$Problem_extend, "</b>", "problem of",  
+                   "<b>", reactive_speed()$Ranking, "</b>", "type. As such,", "<b>", reactive_speed()$`Kind of Maintenance`,
+                   "maintenance", "</b>", "is recommended, which involves", reactive_speed()$`Suggested Actions`,
+                   "."))
       } else {
-        paste("Based on the provided information the severity of the road condition 
-              could be classified as a", unique(reactive_speed()$Problem_extend), "problem of",  
-              unique(reactive_speed()$Ranking),"type. As such, either", as.data.frame(reactive_speed())[1, 8],
-              "or", as.data.frame(reactive_speed())[2, 8], "maintenance is recommended.",
-              as.data.frame(reactive_speed())[1, 8], "maintenance involves", 
-              as.data.frame(reactive_speed())[1, 7], "while", as.data.frame(reactive_speed())[2, 8],
-              "maintenance involves", as.data.frame(reactive_speed())[2, 7], ".")
+        HTML(paste("Based on the provided information the severity of the road condition 
+                   could be classified as a", "<b>", unique(reactive_speed()$Problem_extend), "</b>", "problem of",  
+                   "<b>", unique(reactive_speed()$Ranking), "</b>", "type. As such, either", "<b>", as.data.frame(reactive_speed())[1, 8],
+                   "or", as.data.frame(reactive_speed())[2, 8], "maintenance", "</b>", "is recommended.",
+                   as.data.frame(reactive_speed())[1, 8], "maintenance involves", 
+                   as.data.frame(reactive_speed())[1, 7], ", while", as.data.frame(reactive_speed())[2, 8],
+                   "maintenance involves", as.data.frame(reactive_speed())[2, 7], "."))
       }
     }
     
     })
+  
+  output$damage_photo <- renderImage({
+    list(
+      src = file.path("common_pavement_defects.jpg"),
+      contentType = "image/jpeg",
+      width = 750,
+      height = 310
+    )
+  }, deleteFile = FALSE)
 }
 
 
