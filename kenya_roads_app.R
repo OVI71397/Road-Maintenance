@@ -8,7 +8,7 @@ library(mapproj)
 library(plotly)
 
 thematic::thematic_shiny() 
-setwd("/Users/miss_viktoriia/Documents/Git_Road_Maintenance/Road-Maintenance/")
+
 roads <- readxl::read_excel("data/road maintenance routine.xlsx")
 roads <- roads %>%
   rename(Problem_extend = Defect...3,
