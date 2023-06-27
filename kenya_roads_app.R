@@ -323,7 +323,7 @@ bar_chart_plot <- function(categ) {
 
 
 ui <- fluidPage(
-  theme = bs_theme(version = 4, bootswatch = "materia", primary = "#719b25", bg = "#fefefe", fg = "#464241", font_scale = 1.2),
+  theme = bs_theme(version = 5, bootswatch = "materia", primary = "#719b25", bg = "#fefefe", fg = "#464241", font_scale = 1.2),
   
   fluidRow(
     column(width = 10,
@@ -349,15 +349,15 @@ ui <- fluidPage(
                                    )
                            ),
                   tabPanel("Road Condition",
-                           fluidRow(
-                             column(width = 12,
-                                    shinycssloaders::withSpinner(
-                                      leaflet::leafletOutput('kenya_roads',
+                             fluidRow(
+                               column(width = 12,
+                                        shinycssloaders::withSpinner(
+                                        leaflet::leafletOutput('kenya_roads',
                                                            width = "100%",
                                                            height = 560), 
-                                      size = 1, color = "#719b25"),
+                                        size = 1, color = "#719b25"),
                                     absolutePanel(id = "summary", class = "panel",
-                                                  top = 150, left = 185, width = 240, fixed = TRUE,
+                                                  bottom = 60, left = 170, width = 240, fixed = TRUE,
                                                   draggable = TRUE, height = "auto",
                                                   span(tags$i(tags$small("Road condition summary both general and by pavement type.")), style = "color:#686461"),
                                                   selectInput("class", 
@@ -368,7 +368,7 @@ ui <- fluidPage(
                                                   plotlyOutput("surf_bar", height = "210px", width = "100%"),
                                                   tags$style(type = 'text/css', ".selectize-input { font-size: 13px;}
                                                                                  .selectize-dropdown { font-size: 13px;}"))
-                                   ), tags$style(type = "text/css", "#summary {background-color: white; opacity: 0.9; padding: 5px 5px 5px 5px; transition: opacity 500ms 1s;}")
+                                   ), tags$style(type = "text/css", "#summary {background-color: white; opacity: 0.9; padding: 5px 5px 5px 5px; transition: opacity 500ms 1s; font-size: 15px}")
                                    )
                            ),
                   tabPanel("Maintenance Recommendation",
@@ -388,7 +388,7 @@ ui <- fluidPage(
                              column(8,
                                     wellPanel(h5(htmlOutput(outputId = "maintenance_rec"), align = "center")),
                                     h5("Common types of defects on paved roads", align = "center"),
-                                    imageOutput("damage_photo")
+                                    imageOutput("damage_photo", height="50%", width="50%")
                                     )
                                     )
                            )
@@ -479,9 +479,9 @@ server <- function(input, output, session){
   output$damage_photo <- renderImage({
     list(
       src = file.path("common_pavement_defects.jpg"),
-      contentType = "image/jpeg",
-      width = 750,
-      height = 310
+      contentType = "image/jpeg"
+      #width = 750,
+     # height = 310
     )
   }, deleteFile = FALSE)
 }
