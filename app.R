@@ -341,9 +341,7 @@ ui <- fluidPage(
                                   ),
                            column(width = 5,
                                   div(id = "intro",
-                                    includeMarkdown('problem_description.Rmd')),
-                                  #includeMarkdown('./user_guide/user_guide.rmd')
-                                  # text-align:center; 
+                                    includeMarkdown('supplementary_files/problem_description.Rmd')),
                                   tags$style(type = "text/css", "#intro {font-size: 15px; display: block;}")
                                   )
                                    )
@@ -478,7 +476,7 @@ server <- function(input, output, session){
   
   output$damage_photo <- renderImage({
     list(
-      src = file.path("common_pavement_defects.jpg"),
+      src = file.path("supplementary_files/common_pavement_defects.jpg"),
       contentType = "image/jpeg"
       #width = 750,
      # height = 310
