@@ -89,7 +89,7 @@ index_plot <- plot_ly(rqi, x = ~year, y = ~RQI, type = 'scatter', mode = 'lines'
 
 
 # Road Map (data + map)
-kenya_network <- sf::st_read("data/kenya_roads/Kenya_roads_version2.shp")
+kenya_network <- sf::read_sf("data/kenya_roads/Kenya_roads_version2.shp")
 kenya_network$CLASS <- replace(kenya_network$CLASS, 
                                is.na(kenya_network$CLASS),
                                "Unknown") %>%
@@ -125,7 +125,7 @@ tert <- kenya_network %>%
 
 
 
-kenya_bound <- sf::st_read("data/Kenya_County_Boundaries/Kenya_County_Boundaries.shp")
+kenya_bound <- sf::read_sf("data/Kenya_County_Boundaries/Kenya_County_Boundaries.shp")
 
 quality_pal <- colorFactor(palette = c("#B2AB2E", "#ED413E", "#686461", "#CFCBC8"), 
                            domain = kenya_network$condition_reduc,
