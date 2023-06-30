@@ -440,7 +440,7 @@ server <- function(input, output, session){
   
   reactive_speed <- reactive({
     reactive_road_defect() %>%
-      filter(Speed == input$speed)
+      filter(Speed %in% input$speed)
     })
   
   output$maintenance_rec <- renderUI({
