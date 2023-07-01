@@ -161,27 +161,27 @@ map <- leaflet(kenya_network) %>%
                              "<br> Length:", "<b>", primary$LENGTHKM, "km", "</b>",
                              "<br> Width:", "<b>", primary$WIDTH, "m", "</b>",
                              "<br> Lanes:", "<b>", primary$LANES, "</b>",
-                             "<br> Pavement Type:", "<b>", primary$TYPE, "</b>")) %>%
-  addPolylines(data = secondary, 
-               weight = 2,
-               group = "Secondary (Main) Road Network",
-               color = ~quality_pal(secondary$condition_reduc),
-               opacity = 1,
-               popup = paste("<b>", secondary$ROADNO, "road", "</b>", 
-                             "<br> Length:", "<b>", secondary$LENGTHKM, "km", "</b>",
-                             "<br> Width:", "<b>", secondary$WIDTH, "m", "</b>",
-                             "<br> Lanes:", "<b>", secondary$LANES, "</b>",
-                             "<br> Pavement Type:", "<b>", secondary$TYPE, "</b>")) %>%
-  addPolylines(data = tert, 
-               weight = 1,
-               group = "Tertiary Road Network",
-               color = ~quality_pal(tert$condition_reduc),
-               opacity = 1,
-               popup = paste("<b>", tert$ROADNO, "road", "</b>", 
-                             "<br> Length:", "<b>", tert$LENGTHKM, "km", "</b>",
-                             "<br> Width:", "<b>", tert$WIDTH, "m", "</b>",
-                             "<br> Lanes:", "<b>", tert$LANES, "</b>",
-                             "<br> Pavement Type:", "<b>", tert$TYPE, "</b>"))
+                             "<br> Pavement Type:", "<b>", primary$TYPE, "</b>")) 
+#  addPolylines(data = secondary, 
+#               weight = 2,
+#               group = "Secondary (Main) Road Network",
+#               color = ~quality_pal(secondary$condition_reduc),
+#               opacity = 1,
+#               popup = paste("<b>", secondary$ROADNO, "road", "</b>", 
+#                             "<br> Length:", "<b>", secondary$LENGTHKM, "km", "</b>",
+#                             "<br> Width:", "<b>", secondary$WIDTH, "m", "</b>",
+#                             "<br> Lanes:", "<b>", secondary$LANES, "</b>",
+#                             "<br> Pavement Type:", "<b>", secondary$TYPE, "</b>")) %>%
+#  addPolylines(data = tert, 
+#               weight = 1,
+#               group = "Tertiary Road Network",
+#               color = ~quality_pal(tert$condition_reduc),
+#               opacity = 1,
+#               popup = paste("<b>", tert$ROADNO, "road", "</b>", 
+#                             "<br> Length:", "<b>", tert$LENGTHKM, "km", "</b>",
+#                             "<br> Width:", "<b>", tert$WIDTH, "m", "</b>",
+#                             "<br> Lanes:", "<b>", tert$LANES, "</b>",
+#                             "<br> Pavement Type:", "<b>", tert$TYPE, "</b>"))
   
 # Road Map (donut charts + bar charts)
 color <- c("#B2AB2E", "#ED413E", "#686461", "#CFCBC8")
