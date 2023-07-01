@@ -161,7 +161,7 @@ map <- leaflet(kenya_network) %>%
                              "<br> Length:", "<b>", primary$LENGTHKM, "km", "</b>",
                              "<br> Width:", "<b>", primary$WIDTH, "m", "</b>",
                              "<br> Lanes:", "<b>", primary$LANES, "</b>",
-                             "<br> Pavement Type:", "<b>", primary$TYPE, "</b>")) 
+                             "<br> Pavement Type:", "<b>", primary$TYPE, "</b>")) %>%
   addPolylines(data = secondary, 
                weight = 2,
                group = "Secondary (Main) Road Network",
