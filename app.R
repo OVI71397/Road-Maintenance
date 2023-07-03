@@ -8,7 +8,7 @@ library(mapproj)
 library(plotly)
 
 thematic::thematic_shiny() 
-
+unix::rlimit_memlock(3e9)
 roads <- readxl::read_excel("data/road maintenance routine.xlsx")
 roads <- roads %>%
   rename(Problem_extend = Defect...3,
