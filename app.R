@@ -8,7 +8,8 @@ library(mapproj)
 library(plotly)
 
 thematic::thematic_shiny() 
-unix::rlimit_memlock(3e8)
+#unix::rlimit_memlock(3e8)
+
 roads <- readxl::read_excel("data/road maintenance routine.xlsx")
 roads <- roads %>%
   rename(Problem_extend = Defect...3,
@@ -89,7 +90,8 @@ index_plot <- plot_ly(rqi, x = ~year, y = ~RQI, type = 'scatter', mode = 'lines'
 
 
 # Road Map (data + map)
-kenya_network <- sf::st_read("/vsicurl/https://github.com/OVI71397/Road-Maintenance/raw/main/data/kenya_roads/Kenya_roads_version2.shp")
+kenya_network <- sf::st_read("/vsicurl/https://github.com/OVI71397/Road-Maintenance/raw/main/data/kenya_roads/Kenya_roads_version2.shp") %>%
+  rmapshaper::ms_simplify(keep = 0.03, keep_shapes = T)
 kenya_network$CLASS <- replace(kenya_network$CLASS, 
                                is.na(kenya_network$CLASS),
                                "Unknown") %>%
