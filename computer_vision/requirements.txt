@@ -1,0 +1,5 @@
+requests
+tensorflow~=2.13.0
+numpy
+keras~=2.13.1
+Flask~=2.3.3
